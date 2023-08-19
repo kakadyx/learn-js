@@ -1,4 +1,18 @@
 'use strict';
+// Как потерять this?
+{
+    const obj = {
+        field: 'exist',
+        func(){
+            console.log(this.field)
+        }
+    }
+    const noThisFunc = obj.func
+
+    obj.func()
+    //noThisFunc() // this потерян т.к. функция не имеет контекста исполнения
+}
+
 // Здесь функция makeUser возвращает объект.
 // Каким будет результат при обращении к свойству объекта ref? Почему?
 
@@ -11,7 +25,7 @@ function makeUser() {
 
 let user = makeUser();
 
-console.log( user.ref.name ); // error
+// console.log( user.ref.name ); // error
 
 // Создайте объект calculator (калькулятор) с тремя методами:
 //
@@ -48,8 +62,9 @@ let ladder = {
         return this
     },
     showStep: function() { // показывает текущую ступеньку
-        alert( this.step );
+        console.log( this.step );
         return this
     }
 }
+ladder.up().up().down().showStep().down().showStep() // 1 0
 // цель: ladder.up().up().down().showStep().down().showStep(); // показывает 1 затем 0
