@@ -13,7 +13,7 @@
     user.surname = 'Smith'
     user.name = 'Pete'
     delete user.name
-}
+}1234
 // Напишите функцию isEmpty(obj), которая возвращает true, если у объекта нет свойств, иначе false.
 //     Должно работать так:
 // let schedule = {};
