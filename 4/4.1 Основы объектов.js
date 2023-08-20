@@ -23,7 +23,7 @@
 {
     function isEmpty (obj) {
         return !Object.keys(obj).length
-    }
+    }16
 }
 {
     const user = {
