@@ -7,7 +7,7 @@
 //     Добавьте свойство surname со значением Smith.
 //     Измените значение свойства name на Pete.
 //     Удалите свойство name из объекта.
-{
+{123
     const user = {} // = Object()
     user.name = 'John'
     user.surname = 'Smith'
