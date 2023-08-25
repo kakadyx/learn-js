@@ -1,4 +1,3 @@
-'use strict';
 // Написать функцию конструктор для заказа в магазине.
 
 // Новый инстанс - новый заказ у него будут методы:
@@ -17,98 +16,99 @@
 // Использовать отладку (debugger) при решении в хроме.
 // Если получится без отладки - самому допустить ошибку и найти ее при отладке через интерфейс девтулзов
 
-
 // доп задание - добавить работу с локал стором (общий для всех объектов)
 // также добавить дефолтное значение если не задано обратно (пакет)
 // хэндлить ошибки
-class CountError extends Error {
 
-  constructor() {
-      super();
-      this.message = 'oreder list locked'
+function ShopOrder() {
+  let isLocked = false;
+  const order = {};
 
-  }
-}
+  this.addItem = function (item, count = 1) {
+    if (isLocked) throw new Error('список заблокирован для изменений');
 
-function ShopOrder () {
-    let isLocked = false
-    const order = {}
-
-    this.addItem = function (item, count = 1) {
-        if (isLocked) return;
-
-        if (count > 0) {
-            order[item.name] ??= { ...item, count: 0 }
-            order[item.name].count += count
-        } else {
-            throw new CountError
-        }
+    if (count > 0) {
+      order[item.name] ??= { ...item, count: 0 };
+      order[item.name].count += count;
+    } else {
+      throw new Error('параметр count меньше или равен нулю');
     }
-    this.removeItem = function (item, count) {
-        const orderItem = order[item.name]
-        if (isLocked || !orderItem) return;
-
-        if (!count || orderItem.count <= count) {
-            delete order[item.name]
-        } else {
-            orderItem.count -= count
-        }
+  };
+  this.removeItem = function (item, count) {
+    const orderItem = order[item.name];
+    if (isLocked) {
+      throw new Error('список заблокирован для изменений');
+    } else if (!orderItem) {
+      throw new Error('в списке нет данной позиции');
     }
-    this.getCheck = function () {
-        const preparedCheckItems = Object.values(order).map((item) => {
-            return {
-                ...item,
-                fullPrice: item.price * item.count
-            }
-        })
 
-        const preparedCheck = {
-            items: preparedCheckItems,
-            fullPrice: preparedCheckItems.reduce((acc, item) => acc + item.fullPrice, 0)
-        }
+    if (!count || orderItem.count < count) {
+      throw new Error('нельзя убрать больше товаров чем добавлено');
+    } else if (count === orderItem.count) {
+      delete order[item.name];
+    } else {
+      orderItem.count -= count;
+    }
+  };
+  this.getCheck = function () {
+    const preparedCheckItems = Object.values(order).map((item) => ({
+      ...item,
+      fullPrice: item.price * item.count,
+    }));
 
-        console.log(`
+    const preparedCheck = {
+      items: preparedCheckItems,
+      fullPrice: preparedCheckItems.reduce((accumulator, item) => accumulator + item.fullPrice, 0),
+    };
+
+    console.log(`  
         Чек
-        ${preparedCheck.items
-            .reduce((acc,  item) => acc + `
-            ${item.name} --- ${item.price} --- кол-во ${item.count} --- ${item.fullPrice}\n`, ``)
-        }
-        
+        ${preparedCheck.items.reduce((accumulator, item) => `${accumulator}
+         ${item.name} --- ${item.price} --- кол-во ${item.count} --- ${item.fullPrice}\n`, '')} 
         Полная цена: ${preparedCheck.fullPrice}
-        `)
+        `);
 
-        return preparedCheck
-    }
-    this.lockOrder = function () {
-        isLocked = true
-    }
-    this.unlockOrder = function () {
-        isLocked = false
-    }
+    return preparedCheck;
+  };
+  this.lockOrder = function () {
+    isLocked = true;
+  };
+  this.unlockOrder = function () {
+    isLocked = false;
+  };
 }
 
-const testorder = new ShopOrder()
+const testorder = new ShopOrder();
 
 const pivo = {
-    name: 'pivo',
-    price: 49
-}
+  name: 'pivo',
+  price: 49,
+};
 const hubaBooba = {
-    name: 'jvachka',
-    price: 218
-}
+  name: 'jvachka',
+  price: 218,
+};
 const krabi = {
-    name: 'cumchatsky krab',
-    price: 3000
-}
+  name: 'cumchatsky krab',
+  price: 3000,
+};
 
-testorder.addItem(pivo)
-testorder.addItem(pivo)
-testorder.removeItem(hubaBooba)
-testorder.addItem(hubaBooba, 5)
-testorder.removeItem(hubaBooba, 3)
-testorder.removeItem(pivo, 3)
-testorder.lockOrder()
-testorder.unlockOrder()
-testorder.addItem(krabi, 3)
-testorder.getCheck()
+// testorder.addItem(pivo);
+// testorder.addItem(pivo);
+// testorder.removeItem(hubaBooba);
+// testorder.addItem(hubaBooba, 5);
+// testorder.removeItem(hubaBooba, 3);
+// testorder.removeItem(pivo, 3);
+// testorder.lockOrder();
+// testorder.unlockOrder();
+// testorder.addItem(krabi, 3);
+// testorder.getCheck();
+
+try {
+  const errorOrder = new ShopOrder();
+  errorOrder.lockOrder();
+  errorOrder.addItem(krabi, -1);
+  errorOrder.removeItem(krabi);
+} catch (e) {
+  console.log(e);
+}
