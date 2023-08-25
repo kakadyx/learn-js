@@ -16,6 +16,20 @@
 
 // Использовать отладку (debugger) при решении в хроме.
 // Если получится без отладки - самому допустить ошибку и найти ее при отладке через интерфейс девтулзов
+
+
+// доп задание - добавить работу с локал стором (общий для всех объектов)
+// также добавить дефолтное значение если не задано обратно (пакет)
+// хэндлить ошибки
+class CountError extends Error {
+
+  constructor() {
+      super();
+      this.message = 'oreder list locked'
+
+  }
+}
+
 function ShopOrder () {
     let isLocked = false
     const order = {}
@@ -26,6 +40,8 @@ function ShopOrder () {
         if (count > 0) {
             order[item.name] ??= { ...item, count: 0 }
             order[item.name].count += count
+        } else {
+            throw new CountError
         }
     }
     this.removeItem = function (item, count) {
