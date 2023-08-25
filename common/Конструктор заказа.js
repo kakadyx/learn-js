@@ -18,28 +18,28 @@
 // Если получится без отладки - самому допустить ошибку и найти ее при отладке через интерфейс девтулзов
 function ShopOrder () {
     let isLocked = false
-    const receipt = {}
+    const order = {}
 
     this.addItem = function (item, count = 1) {
         if (isLocked) return;
 
         if (count > 0) {
-            receipt[item.name] ??= { ...item, count: 0 }
-            receipt[item.name].count += count
+            order[item.name] ??= { ...item, count: 0 }
+            order[item.name].count += count
         }
     }
     this.removeItem = function (item, count) {
-        const receiptItem = receipt[item.name]
-        if (isLocked || !receiptItem) return;
+        const orderItem = order[item.name]
+        if (isLocked || !orderItem) return;
 
-        if (!count || receiptItem.count <= count) {
-            delete receipt[item.name]
+        if (!count || orderItem.count <= count) {
+            delete order[item.name]
         } else {
-            receiptItem.count -= count
+            orderItem.count -= count
         }
     }
     this.getCheck = function () {
-        const preparedCheckItems = Object.values(receipt).map((item) => {
+        const preparedCheckItems = Object.values(order).map((item) => {
             return {
                 ...item,
                 fullPrice: item.price * item.count
@@ -71,7 +71,7 @@ function ShopOrder () {
     }
 }
 
-const testReceipt = new ShopOrder()
+const testorder = new ShopOrder()
 
 const pivo = {
     name: 'pivo',
@@ -86,13 +86,13 @@ const krabi = {
     price: 3000
 }
 
-testReceipt.addItem(pivo)
-testReceipt.addItem(pivo)
-testReceipt.removeItem(hubaBooba)
-testReceipt.addItem(hubaBooba, 5)
-testReceipt.removeItem(hubaBooba, 3)
-testReceipt.removeItem(pivo, 3)
-testReceipt.lockOrder()
-testReceipt.unlockOrder()
-testReceipt.addItem(krabi, 3)
-testReceipt.getCheck()
+testorder.addItem(pivo)
+testorder.addItem(pivo)
+testorder.removeItem(hubaBooba)
+testorder.addItem(hubaBooba, 5)
+testorder.removeItem(hubaBooba, 3)
+testorder.removeItem(pivo, 3)
+testorder.lockOrder()
+testorder.unlockOrder()
+testorder.addItem(krabi, 3)
+testorder.getCheck()
