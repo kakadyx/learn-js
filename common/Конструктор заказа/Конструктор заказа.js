@@ -17,8 +17,8 @@
 // Если получится без отладки - самому допустить ошибку и найти ее при отладке через интерфейс девтулзов
 
 // доп задание - добавить работу с локал стором (общий для всех объектов)
-// также добавить дефолтное значение если не задано обратно (пакет)
-// хэндлить ошибки
+// также добавить дефолтное значение (пакет) если не задано при вызове
+//  ошибки
 
 function ShopOrder(defaultValue = {
   package: {
@@ -27,31 +27,38 @@ function ShopOrder(defaultValue = {
     name: 'пакет',
   },
 }) {
-  let localStorageOrder = null;
-  if (localStorage) localStorageOrder = JSON.parse(localStorage.getItem('order'));
+  const localStorageOrder = JSON.parse(localStorage.getItem('order'));
   let isLocked = false;
   const order = localStorageOrder || defaultValue;
+  function checkItem(item) {
+    if (!item || typeof item !== 'object') throw new Error('товар не передан');
+    if (!item.name || !item.price || (item.count && item.count < 1)) throw new Error('свойства товара не корректны');
+  }
 
   this.addItem = function (item, count = 1) {
     if (isLocked) throw new Error('список заблокирован для изменений');
-
-    if (count > 0) {
-      order[item.name] ??= { ...item, count: 0 };
-      order[item.name].count += count;
-    } else {
+    else if (count <= 0) {
       throw new Error('параметр count меньше или равен нулю');
     }
+    checkItem(item);
+
+    order[item.name] ??= { ...item, count: 0 };
+    order[item.name].count += count;
   };
   this.removeItem = function (item, count) {
-    const orderItem = order[item.name];
     if (isLocked) {
       throw new Error('список заблокирован для изменений');
-    } else if (!orderItem) {
-      throw new Error('в списке нет данной позиции');
     }
-    if (orderItem.count < count) {
+    checkItem(item);
+
+    const orderItem = order[item.name];
+    if (!orderItem) {
+      throw new Error('в списке нет данной позиции');
+    } else if (orderItem.count < count) {
       throw new Error('нельзя убрать больше товаров чем добавлено');
-    } else if (count === orderItem.count || !count) {
+    }
+
+    if (count === orderItem.count || !count) {
       delete order[item.name];
     } else {
       orderItem.count -= count;
@@ -84,7 +91,6 @@ function ShopOrder(defaultValue = {
     isLocked = false;
   };
   this.setLocalStorageValue = function () {
-    if (!localStorage) throw new Error('localStorage не существует');
     localStorage.setItem('order', JSON.stringify(order));
   };
 }
@@ -106,15 +112,14 @@ const krabi = {
 
 testorder.addItem(pivo);
 testorder.addItem(pivo);
-testorder.setLocalStorageValue();
-// testorder.removeItem(hubaBooba);
-// testorder.addItem(hubaBooba, 5);
-// testorder.removeItem(hubaBooba, 3);
-// testorder.removeItem(pivo, 3);
-// testorder.lockOrder();
-// testorder.unlockOrder();
-// testorder.addItem(krabi, 3);
-// testorder.getCheck();
+testorder.addItem(hubaBooba);
+testorder.addItem(hubaBooba, 5);
+testorder.removeItem(hubaBooba, 1);
+testorder.removeItem(pivo, 1);
+testorder.addItem(krabi, 3);
+testorder.getCheck();
+testorder.unlockOrder();
+// testorder.setLocalStorageValue();
 
 // try {
 //   const errorOrder = new ShopOrder();
