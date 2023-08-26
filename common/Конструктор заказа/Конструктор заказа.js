@@ -20,9 +20,17 @@
 // также добавить дефолтное значение если не задано обратно (пакет)
 // хэндлить ошибки
 
-function ShopOrder() {
+function ShopOrder(defaultValue = {
+  package: {
+    count: 1,
+    price: 5,
+    name: 'пакет',
+  },
+}) {
+  let localStorageOrder = null;
+  if (localStorage) localStorageOrder = JSON.parse(localStorage.getItem('order'));
   let isLocked = false;
-  const order = {};
+  const order = localStorageOrder || defaultValue;
 
   this.addItem = function (item, count = 1) {
     if (isLocked) throw new Error('список заблокирован для изменений');
@@ -41,10 +49,9 @@ function ShopOrder() {
     } else if (!orderItem) {
       throw new Error('в списке нет данной позиции');
     }
-
-    if (!count || orderItem.count < count) {
+    if (orderItem.count < count) {
       throw new Error('нельзя убрать больше товаров чем добавлено');
-    } else if (count === orderItem.count) {
+    } else if (count === orderItem.count || !count) {
       delete order[item.name];
     } else {
       orderItem.count -= count;
@@ -76,6 +83,10 @@ function ShopOrder() {
   this.unlockOrder = function () {
     isLocked = false;
   };
+  this.setLocalStorageValue = function () {
+    if (!localStorage) throw new Error('localStorage не существует');
+    localStorage.setItem('order', JSON.stringify(order));
+  };
 }
 
 const testorder = new ShopOrder();
@@ -93,8 +104,9 @@ const krabi = {
   price: 3000,
 };
 
-// testorder.addItem(pivo);
-// testorder.addItem(pivo);
+testorder.addItem(pivo);
+testorder.addItem(pivo);
+testorder.setLocalStorageValue();
 // testorder.removeItem(hubaBooba);
 // testorder.addItem(hubaBooba, 5);
 // testorder.removeItem(hubaBooba, 3);
@@ -104,11 +116,11 @@ const krabi = {
 // testorder.addItem(krabi, 3);
 // testorder.getCheck();
 
-try {
-  const errorOrder = new ShopOrder();
-  errorOrder.lockOrder();
-  errorOrder.addItem(krabi, -1);
-  errorOrder.removeItem(krabi);
-} catch (e) {
-  console.log(e);
-}
+// try {
+//   const errorOrder = new ShopOrder();
+//   errorOrder.lockOrder();
+//   errorOrder.addItem(krabi, -1);
+//   errorOrder.removeItem(krabi);
+// } catch (e) {
+//   console.log(e);
+// }
