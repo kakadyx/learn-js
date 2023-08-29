@@ -1,3 +1,8 @@
+// Реализуйте (с использованием рекурсии) функцию getStringCount,
+// которая должна принимать массив или объект и считать количество строк
+// в массиве / значениях объекта с учетом вложенности.
+// P.S. Для корректного прохождения проверку на рекурсию - вы должны вызывать именно функцию getStringCount
+
 const stringCountCacheMap = new WeakMap();
 function reduceCb(acc, currentValue) {
   if (typeof currentValue === 'string') {

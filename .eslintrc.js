@@ -25,5 +25,6 @@ module.exports = {
     'func-names': 0,
     'no-console': 0,
     'max-len': 0,
+    'no-use-before-define': 0,
   },
 };
