@@ -17,7 +17,7 @@ arr.myForEach((item) => console.log(item));
 // myReduce
 function myReduce(callback, acc) {
   let i = 0;
-  let innerAcc = acc;
+  let innerAcc = acc ?? this[0];
   for (const item of this) {
     i += 1;
     innerAcc = callback(innerAcc, item, i, this);
