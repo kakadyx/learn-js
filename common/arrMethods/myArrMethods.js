@@ -20,13 +20,48 @@ Array.prototype.myReduce = function (callback, acc) {
   let i = innerAcc === this[0] ? 1 : 0;
 
   for (;i < this.length; i++) {
-    console.log(i);
     innerAcc = callback(innerAcc, this[i], i, this);
   }
 
   return innerAcc;
 };
 
+// myFrom
+Array.myFrom = function (items, mapfn) {
+  if (mapfn && typeof mapfn !== 'function') {
+    throw new TypeError('second argument is not a funciton');
+  }
+  const result = [];
+
+  const iterator = items?.[Symbol.iterator]?.();
+  if (iterator) {
+    let i = 0;
+    let value = iterator.next();
+    while (!value.done) {
+      result.push(mapfn ? mapfn(value.value, i) : value.value);
+      value = iterator.next();
+      i += 1;
+    }
+  } else if (items.length) {
+    result.length = items.length;
+    for (let i = 0; i < result.length; i++) {
+      const itemVal = items[i] ?? undefined;
+      result[i] = mapfn ? mapfn(itemVal, i) : itemVal;
+    }
+  }
+
+  return result;
+};
+
+console.log(Array.myFrom([1, 2, 3], (x) => x ** 2));
+console.log(Array.myFrom('kekeke'));
+const set = new Set(['foo', 'bar', 'baz', 'foo']);
+console.log(Array.myFrom(set));
+function f() {
+  return Array.myFrom(arguments, (x) => x ** 3);
+}
+
+console.log(f(1, 2, 3));
 // console.log(arr.myReduce((acc, curr) => {
 //   console.log(acc, curr);
 //   return acc + curr;
