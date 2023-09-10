@@ -1,38 +1,27 @@
+// https://leetcode.com/problems/remove-element/?envType=study-plan-v2&envId=top-interview-150
 /**
  * @param {number[]} nums
  * @param {number} val
  * @return {number}
  */
 const removeElement = function (nums, val) {
-  if (nums.length === 1 && nums[0] === val) {
-    return [];
-  }
-  const baseLength = nums.length;
-
-  let k = 0;
-
-  let endIndex = nums.length - 1;
-  function swapEls(index) {
-    if (nums[endIndex] === val) {
-      nums.splice(endIndex, 1);
-      if (endIndex > 0) {
-        endIndex -= 1;
-        swapEls(index);
+  let valEntries = 0;
+  if (nums.length > 1) {
+    for (let i = 0; i <= nums.length - 1 - valEntries; i++) {
+      const curr = nums[i];
+      if (curr === val) {
+        nums[i] = nums[nums.length - 1 - valEntries];
+        i -= 1;
+        valEntries += 1;
       }
-    } else {
-      k += 1;
-      nums[index] = nums[endIndex];
-      nums.splice(endIndex, 1);
     }
-  }
-  for (let i = 0; i < endIndex; i++) {
-    if (nums[i] === val) {
-      swapEls(i);
+  } else {
+    if (nums[0] === val) {
+      return 0;
     }
+    return 1;
   }
-
-  return baseLength - endIndex - k;
+  return nums.length - valEntries;
 };
-const nums = [3, 3];
-console.log(removeElement(nums, 3));
-console.log(nums);
+
+console.log(removeElement([2, 2, 2], 2));
