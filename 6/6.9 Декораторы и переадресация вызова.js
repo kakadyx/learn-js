@@ -81,6 +81,27 @@ for (const args of work.calls) {
     };
   }
 
+  function throttleBest(func, timeout) {
+    let innerArgs = null;
+    let timeoutId = null;
+
+    return function (...args) {
+      if (timeoutId) {
+        innerArgs = args;
+        return;
+      }
+
+      func(...args);
+      timeoutId = setTimeout(() => {
+        if (innerArgs) {
+          func(...innerArgs);
+          innerArgs = null;
+          timeoutId = null;
+        }
+      }, timeout);
+    };
+  }
+
   function f(a) {
     console.log(a);
   }
