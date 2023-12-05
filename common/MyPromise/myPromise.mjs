@@ -44,7 +44,6 @@ class MyPromise {
 
   resolve(value) {
     this.status = 'fulfilled';
-    this.#returnValue = value;
 
     if (this.#then) this.#then(value);
   }
@@ -69,12 +68,18 @@ const anotherPromise = testPromise.then((res) => console.log('thenable res', res
 console.log(anotherPromise);
 setTimeout(() => console.log(testPromise, anotherPromise), 4000);
 
-// const testPromise1 = new Promise((resolve, reject) => {
+// const testPromise1 = new MyPromise((resolve, reject) => {
 //   setTimeout(reject, 400);
 // });
 //
 // const testPromise2 = testPromise1.then(() => {});
-// const testPromise3 = testPromise2.catch(() => 5);
+// const testPromise3 = testPromise2.catch(() => 5).then((res) => {
+//   console.log(res);
+//   return res;
+// }).then((res) => {
+//   console.log(res ** res);
+//   return res;
+// });
 // console.log(testPromise1);
 // console.log(testPromise2);
 // console.log(testPromise3);
