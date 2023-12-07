@@ -1,18 +1,11 @@
-class MyPromise {
+export default class MyPromise {
   status = 'pending';
-
-  #error = null;
 
   #then = null;
 
   #catch = null;
 
-  #childReject = null;
-
-  #returnValue = {
-    value: null,
-  };
-
+  #childReject = null
   constructor(executor) {
     executor(this.resolve.bind(this), this.reject.bind(this));
   }
@@ -30,11 +23,11 @@ class MyPromise {
     });
   }
 
-  catch(handler) {
+  catch(func) {
     return new MyPromise((resolve, reject) => {
       try {
         this.#catch = (...args) => {
-          resolve(handler(...args));
+          resolve(func(...args));
         };
       } catch (error) {
         reject(error);
@@ -45,28 +38,27 @@ class MyPromise {
   resolve(value) {
     this.status = 'fulfilled';
 
-    if (this.#then) this.#then(value);
+    queueMicrotask(() => this.#then?.(value));
   }
 
   reject(error) {
     this.status = 'rejected';
-    this.#error = error;
 
-    if (this.#catch) this.#catch(error);
-    if (this.#childReject) this.#childReject(error);
+    queueMicrotask(() => this.#catch?.(error));
+    queueMicrotask(() => this.#childReject?.(error));
   }
 }
 
-const testPromise = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    console.log('rejected');
-    reject(new Error('error'));
-  }, 3000);
-});
-console.log(testPromise);
-const anotherPromise = testPromise.then((res) => console.log('thenable res', res));
-console.log(anotherPromise);
-setTimeout(() => console.log(testPromise, anotherPromise), 4000);
+// const testPromise = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     console.log('rejected');
+//     reject(new Error('error'));
+//   }, 3000);
+// });
+// console.log(testPromise);
+// const anotherPromise = testPromise.then((res) => console.log('thenable res', res));
+// console.log(anotherPromise);
+// setTimeout(() => console.log(testPromise, anotherPromise), 4000);
 
 // const testPromise1 = new MyPromise((resolve, reject) => {
 //   setTimeout(reject, 400);
